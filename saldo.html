@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saldo</title>
+  <script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-firestore.js"></script>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Bootstrap Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css" rel="stylesheet">
+  
+  <!-- Custom CSS -->
+  <style>
+    body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #e0e0e0; /* Softer background */
+    margin: 0; /* Remove default margin */
+}
+
+/* Navbar Styles */
+.navbar {
+    background-color: #ffcc00; /* Bright yellow background */
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); /* Shadow for depth */
+}
+
+.navbar-brand {
+    color: #ff0000 !important; /* Bright red text */
+    font-size: 24px; /* Larger font size */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Soft text shadow */
+}
+
+.navbar-nav .nav-link {
+    color: #333 !important; /* Darker link color for contrast */
+    font-size: 18px; /* Larger font size */
+    padding: 10px 15px; /* Increased padding for links */
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+}
+
+.navbar-nav .nav-link:hover {
+    background-color: #ff9900; /* Darker orange on hover */
+    color: #fff; /* White text on hover */
+    border-radius: 5px; /* Rounded corners on hover */
+}
+
+/* Container Styles */
+.container {
+    margin-top: 20px;
+    padding: 20px; /* Add some padding */
+}
+
+/* Footer Styles */
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #ffcc00; /* Bright yellow footer */
+    color: #333; /* Dark text color */
+    text-align: center;
+    padding: 15px 0; /* Increased padding */
+    box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.2); /* Shadow for depth */
+}
+
+.footer-menu {
+    display: flex;
+    justify-content: space-around;
+}
+
+.footer-menu a {
+    color: #333; /* Dark text color for links */
+    text-decoration: none;
+    font-size: 18px; /* Font size */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: color 0.3s; /* Smooth color transition */
+}
+
+.footer-menu a:hover {
+    color: #ff0000; /* Bright red on hover */
+}
+
+.footer-menu i {
+    font-size: 28px; /* Larger icon size */
+    transition: transform 0.3s; /* Add transform for hover effect */
+}
+
+.footer-menu a:hover i {
+    transform: scale(1.9); /* Scale up on hover */
+}
+
+    /* Tambahan untuk membuat link tidak aktif dan warna hitam */
+    .disabled-link {
+        color: red !important; /* Warna hitam */
+        pointer-events: none; /* Nonaktifkan klik */
+    }
+    
+    
+
+
+  </style>
+</head>
+
+<body>
+  <h1>Saldo Anda</h1>
+<div id="saldo-info"></div>
+<div>
+  <label for="withdraw-amount">Jumlah Pencairan (min. Rp 10.000):</label>
+  <input type="number" id="withdraw-amount" placeholder="Masukkan jumlah pencairan" class="form-control mb-2">
+
+  <label for="withdraw-method">Metode Pencairan:</label>
+  <select id="withdraw-method" class="form-control mb-2">
+    <option value="gopay">GoPay</option>
+    <option value="shopeepay">ShopeePay</option>
+    <option value="dana">Dana</option>
+    <!-- Tambahkan metode lain jika diperlukan -->
+  </select>
+
+  <label for="withdraw-owner-name">Nama Pemilik Akun:</label>
+  <input type="text" id="withdraw-owner-name" placeholder="Masukkan nama pemilik akun" class="form-control mb-2">
+
+  <button onclick="withdrawSaldo()" class="btn btn-primary">Cairkan Saldo</button>
+  <small>Biaya admin: Rp 3000 akan dipotong dari saldo.</small>
+</div>
+  <!-- Footer Menu dengan Ikon -->
+  <footer>
+    <div class="footer-menu">
+      <a href="beranda.html">
+        <i class="bi bi-house-door"></i>
+        <span>Beranda</span>
+      </a>
+        <a href="main.html">
+    <i class="bi bi-controller"></i>
+    <span>Main</span>
+  </a>
+  <a href="akun.html">
+    <i class="bi bi-person"></i>
+    <span>Akun</span>
+  </a>
+      <a href="saldo.html" class="disabled-link">
+        <i class="bi bi-wallet"></i>
+        <span>Saldo</span>
+      </a>
+    
+    </div>
+  </footer>
+
+  <script>
+    var firebaseConfig = {
+      apiKey: "AIzaSyC6q-jTNQxXOPCaZczcpgRk4q8ftQ0-n3c",
+      authDomain: "internet-14942.firebaseapp.com",
+      projectId: "internet-14942",
+      storageBucket: "internet-14942.appspot.com",
+      messagingSenderId: "214259914034",
+      appId: "1:214259914034:web:de404cf9ee7b35b41b732b",
+      measurementId: "G-BX35S5MZJY"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    var db = firebase.firestore();
+
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        // Ambil saldo dari Firestore
+        var userId = user.uid;
+        var saldoRef = db.collection("users").doc(userId);
+
+        saldoRef.get({ source: 'server' }).then(function(doc) {
+          if (doc.exists) {
+            var saldo = doc.data().saldo;
+            document.getElementById('saldo-info').textContent = "Saldo Anda: Rp " + saldo;
+          } else {
+            document.getElementById('saldo-info').textContent = "Saldo tidak ditemukan.";
+          }
+        }).catch(function(error) {
+          console.log("Error getting document:", error);
+          document.getElementById('saldo-info').textContent = "Terjadi kesalahan.";
+        });
+      } else {
+        window.location.href = "index.html"; // Redirect jika belum login
+      }
+    });
+    
+    
+  function withdrawSaldo() {
+    var amount = parseInt(document.getElementById("withdraw-amount").value);
+    var method = document.getElementById("withdraw-method").value;
+    var ownerName = document.getElementById("withdraw-owner-name").value.trim();
+    var adminFee = 3000;
+
+    // Mengubah minimal pencairan menjadi Rp 10.000
+    if (isNaN(amount) || amount < 10000) {
+      alert("Masukkan jumlah yang valid. Jumlah pencairan minimal adalah Rp 10.000.");
+      return;
+    }
+
+    if (!ownerName) {
+      alert("Masukkan nama pemilik akun untuk pencairan.");
+      return;
+    }
+
+    var totalDeduction = amount + adminFee;
+
+    var user = firebase.auth().currentUser;
+    if (!user) {
+      alert("Anda harus login untuk mencairkan saldo.");
+      return;
+    }
+
+    var saldoRef = db.collection("users").doc(user.uid);
+
+    // Transaksi atomik untuk memastikan saldo tidak kurang dari jumlah pencairan
+    db.runTransaction((transaction) => {
+      return transaction.get(saldoRef).then((doc) => {
+        if (!doc.exists) {
+          throw "Dokumen saldo tidak ditemukan!";
+        }
+
+        var currentSaldo = doc.data().saldo;
+        if (currentSaldo < totalDeduction) {
+          throw "Saldo tidak mencukupi untuk pencairan ini!";
+        }
+
+        var newSaldo = currentSaldo - totalDeduction;
+        transaction.update(saldoRef, { saldo: newSaldo });
+
+        // Menambahkan catatan transaksi pencairan
+        var transaksiRef = db.collection("users").doc(user.uid).collection("transaksi").doc();
+        transaction.set(transaksiRef, {
+          type: "Pencairan",
+          amount: amount,
+          adminFee: adminFee,
+          method: method,
+          ownerName: ownerName,
+          date: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      });
+    }).then(() => {
+      alert("Saldo berhasil dicairkan.");
+      document.getElementById("withdraw-amount").value = ""; // Reset input
+      document.getElementById("withdraw-owner-name").value = ""; // Reset input nama pemilik
+      location.reload(); // Refresh halaman untuk memperbarui saldo
+    }).catch((error) => {
+      console.error("Error dalam pencairan saldo: ", error);
+      alert("Terjadi kesalahan: " + error);
+    });
+  }
+</script>
+  
+  
+
+</body>
+</html>

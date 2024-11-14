@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beranda</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Bootstrap Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css" rel="stylesheet">
+
+  <!-- Custom CSS -->
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #e0e0e0;
+      margin: 0;
+    }
+
+    .navbar {
+      background-color: #ffcc00;
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .navbar-brand {
+      color: #ff0000 !important;
+      font-size: 24px;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    .navbar-nav .nav-link {
+      color: #333 !important;
+      font-size: 18px;
+      padding: 10px 15px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .navbar-nav .nav-link:hover {
+      background-color: #ff9900;
+      color: #fff;
+      border-radius: 5px;
+    }
+
+    .container {
+      margin-top: 20px;
+      padding: 20px;
+      padding-bottom: 80px; /* Tambahan padding-bottom untuk ruang di atas footer */
+    }
+
+    /* Card Styles */
+    .card {
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #fff;
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+    }
+
+    .card-title {
+      color: #ff0000;
+    }
+
+    .card-text {
+      color: #333;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background-color: #ffcc00;
+      color: #333;
+      text-align: center;
+      padding: 15px 0;
+      box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .footer-menu {
+      display: flex;
+      justify-content: space-around;
+    }
+
+    .footer-menu a {
+      color: #333;
+      text-decoration: none;
+      font-size: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: color 0.3s;
+    }
+
+    .footer-menu a:hover {
+      color: #ff0000;
+    }
+
+    .footer-menu i {
+      font-size: 28px;
+      transition: transform 0.3s;
+    }
+
+    .footer-menu a:hover i {
+      transform: scale(1.9);
+    }
+
+    .disabled-link {
+      color: red !important;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="#">Beranda</a>
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="akun.html">Akun</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="saldo.html">Saldo</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Konten Utama -->
+  <div class="container">
+    <h1 class="text-center">Selamat Datang di Beranda</h1>
+    <p class="text-center">Ini adalah halaman beranda utama Anda setelah login.</p>
+
+    <!-- Tata Cara Pencairan Saldo -->
+    <div class="card">
+      <h2 class="card-title text-center">Tata Cara Pencairan Saldo</h2>
+      <div class="card-body">
+        <p class="card-text">
+          1. Buka halaman <strong>Saldo</strong> di menu.<br>
+          2. Pilih opsi <strong>Pencairan</strong> di bagian bawah.<br>
+          3. Masukkan jumlah saldo yang ingin dicairkan (minimal Rp10,000).<br>
+          4. Pilih metode pencairan (misalnya ke rekening bank atau e-money).<br>
+          5. Tekan <strong>Konfirmasi</strong> dan tunggu notifikasi pencairan berhasil.<br>
+          <br>
+          Biaya administrasi sebesar Rp3,000 akan dikenakan untuk setiap transaksi pencairan.
+        </p>
+      </div>
+    </div>
+
+    <!-- Tata Cara Bermain -->
+    <div class="card">
+      <h2 class="card-title text-center">Tata Cara Bermain</h2>
+      <div class="card-body">
+        <p class="card-text">
+          1. Pilih permainan yang ingin dimainkan dari menu <strong>Main</strong>.<br>
+          2. Setiap permainan memiliki batasan waktu yang ditampilkan pada ikon permainan.<br>
+          3. Klik ikon <strong>Main</strong> untuk memulai permainan.<br>
+          4. Ikuti instruksi dalam permainan dan kumpulkan skor.<br>
+          5. Skor Anda akan disimpan, dan Anda dapat mencoba lagi setelah batasan waktu berakhir.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Menu dengan Ikon -->
+  <footer>
+    <div class="footer-menu">
+      <a href="beranda.html" class="disabled-link">
+        <i class="bi bi-house-door"></i>
+        <span>Beranda</span>
+      </a>
+       <a href="main.html">
+   <i class="bi bi-controller"></i>
+   <span>Main</span>
+ </a>
+ <a href="akun.html">
+   <i class="bi bi-person"></i>
+   <span>Akun</span>
+ </a>
+      <a href="saldo.html">
+        <i class="bi bi-wallet"></i>
+        <span>Saldo</span>
+      </a>
+     
+    </div>
+  </footer>
+
+  <!-- Firebase App (the core Firebase SDK) -->
+  <script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-auth.js"></script>
+
+  <script>
+    var firebaseConfig = {
+      apiKey: "AIzaSyC6q-jTNQxXOPCaZczcpgRk4q8ftQ0-n3c",
+      authDomain: "internet-14942.firebaseapp.com",
+      projectId: "internet-14942",
+      storageBucket: "internet-14942.appspot.com",
+      messagingSenderId: "214259914034",
+      appId: "1:214259914034:web:de404cf9ee7b35b41b732b",
+      measurementId: "G-BX35S5MZJY"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (!user) {
+        window.location.href = 'index.html';
+      }
+    });
+  </script>
+
+</body>
+</html>

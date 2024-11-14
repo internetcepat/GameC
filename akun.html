@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Akun Saya</title>
+  <script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-auth.js"></script>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  
+    <!-- Bootstrap Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css" rel="stylesheet">
+  
+    <!-- Custom CSS -->
+    <style>
+      body {
+          font-family: 'Roboto', sans-serif;
+          background-color: #e0e0e0;
+          margin: 0;
+      }
+
+      .navbar {
+          background-color: #ffcc00;
+          box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .navbar-brand {
+          color: #ff0000 !important;
+          font-size: 24px;
+          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+      }
+
+      .container {
+          margin-top: 20px;
+      }
+
+      .card {
+          margin-top: 20px;
+          border-radius: 10px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+          background-color: #fff;
+      }
+
+      .card-header {
+          font-size: 24px;
+          background-color: #ffcc00;
+          color: #333;
+          font-weight: bold;
+          text-align: center;
+      }
+
+      .card-body {
+          font-size: 18px;
+      }
+
+      footer {
+          position: fixed;
+          bottom: 0;
+          width: 100%;
+          background-color: #ffcc00;
+          color: #333;
+          text-align: center;
+          padding: 15px 0;
+          box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .footer-menu {
+          display: flex;
+          justify-content: space-around;
+      }
+
+      .footer-menu a {
+          color: #333;
+          text-decoration: none;
+          font-size: 18px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          transition: color 0.3s;
+      }
+
+      .footer-menu a:hover {
+          color: #ff0000;
+      }
+
+      .footer-menu i {
+          font-size: 28px;
+          transition: transform 0.3s;
+      }
+
+      .footer-menu a:hover i {
+          transform: scale(1.9);
+      }
+
+      .disabled-link {
+          color: red !important;
+          pointer-events: none;
+      }
+    </style>
+</head> 
+
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="card-header">Akun Saya</div>
+      <div class="card-body text-center">
+        <p id="user-name"></p>
+        <p id="user-email"></p>
+        <p id="user-joined"></p>
+        <button onclick="logout()" class="btn btn-danger mt-3">Logout</button>
+      </div>
+    </div>
+    <div class="text-center mt-3">
+      <a href="beranda.html" class="btn btn-secondary">Kembali ke Beranda</a>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-menu">
+      <a href="beranda.html">
+        <i class="bi bi-house-door"></i>
+        <span>Beranda</span>
+      </a>
+        <a href="main.html">
+    <i class="bi bi-controller"></i>
+    <span>Main</span>
+  </a>
+  <a href="akun.html" class="disabled-link">
+    <i class="bi bi-person"></i>
+    <span>Akun</span>
+  </a>
+      <a href="saldo.html">
+        <i class="bi bi-wallet"></i>
+        <span>Saldo</span>
+      </a>
+    
+    </div>
+  </footer>
+
+<script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-firestore.js"></script>
+<script>
+  var firebaseConfig = {
+    apiKey: "AIzaSyC6q-jTNQxXOPCaZczcpgRk4q8ftQ0-n3c",
+    authDomain: "internet-14942.firebaseapp.com",
+    projectId: "internet-14942",
+    storageBucket: "internet-14942.appspot.com",
+    messagingSenderId: "214259914034",
+    appId: "1:214259914034:web:de404cf9ee7b35b41b732b",
+    measurementId: "G-BX35S5MZJY"
+  };
+  firebase.initializeApp(firebaseConfig);
+  var db = firebase.firestore();
+
+  firebase.auth().onAuthStateChanged(function(user) {
+    if (user) {
+      // Mengambil data pengguna dari Firestore berdasarkan UID
+      db.collection("users").doc(user.uid).get()
+        .then((doc) => {
+          if (doc.exists) {
+            document.getElementById('user-name').textContent = "Nama: " + doc.data().name;
+            document.getElementById('user-email').textContent = "Email: " + user.email;
+
+            var createdDate = new Date(user.metadata.creationTime);
+            document.getElementById('user-joined').textContent = "Bergabung sejak: " + createdDate.toLocaleDateString();
+          } else {
+            console.log("Data pengguna tidak ditemukan di Firestore.");
+          }
+        })
+        .catch((error) => {
+          console.error("Error mengambil data pengguna:", error);
+        });
+    } else {
+      window.location.href = "index.html"; // Jika tidak ada user, arahkan ke halaman login
+    }
+  });
+
+  function logout() {
+    firebase.auth().signOut().then(function() {
+      window.location.href = "index.html";
+    }).catch(function(error) {
+      console.error('Logout Error:', error);
+    });
+  }
+</script>
+</body>
+</html>

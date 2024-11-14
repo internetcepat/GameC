@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flappy Cube Game</title>
+     <script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-firestore.js"></script>
+    
+  <style>
+  
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #70c5ce; /* Latar belakang langit */
+    font-family: Arial, sans-serif;
+    background-color: #70c5ce; /* Background warna biru */
+  }
+
+  canvas {
+    border: 2px solid #000;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); /* Efek bayangan pada kanvas */
+  }
+
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas"></canvas>
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = 400;
+    canvas.height = 600;
+
+    // Variabel permainan
+    let birdX = 50;
+    let birdY = canvas.height / 2;
+    let birdSize = 20;
+    let gravity = 0.5;
+    let velocity = 0;
+    let lift = -10;
+    let score = 0;
+    let isGameOver = false;
+
+    // Variabel untuk rintangan
+    let pipes = [];
+    let pipeWidth = 50;
+    let pipeGap = 150;
+    let pipeSpeed = 2;
+    let frameCount = 0;
+
+    // Fungsi game loop
+    function updateGame() {
+      if (isGameOver) return;
+
+      // Membersihkan kanvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Gambar dan update burung (kubus)
+      velocity += gravity;
+      birdY += velocity;
+      ctx.fillStyle = "yellow";
+      ctx.fillRect(birdX, birdY, birdSize, birdSize);
+
+      // Buat dan update rintangan
+      if (frameCount % 100 === 0) {
+        let pipeHeight = Math.floor(Math.random() * (canvas.height - pipeGap));
+        pipes.push({
+          x: canvas.width,
+          topHeight: pipeHeight,
+          bottomY: pipeHeight + pipeGap
+        });
+      }
+
+      pipes.forEach((pipe, index) => {
+        pipe.x -= pipeSpeed;
+        ctx.fillStyle = "green";
+        ctx.fillRect(pipe.x, 0, pipeWidth, pipe.topHeight);
+        ctx.fillRect(pipe.x, pipe.bottomY, pipeWidth, canvas.height - pipe.bottomY);
+     // Deteksi tabrakan
+        if (
+          birdX < pipe.x + pipeWidth &&
+          birdX + birdSize > pipe.x &&
+          (birdY < pipe.topHeight || birdY + birdSize > pipe.bottomY)
+        ) {
+          isGameOver = true;
+alert("Game Over! Skor Anda: " + score);
+window.location.href = "main.html"; // Arahkan ke halaman main.html setelah klik OK
+        }
+
+      // Hapus rintangan yang keluar layar dan tambahkan skor
+if (pipe.x + pipeWidth < 0) {
+  pipes.splice(index, 1);
+  score += 50; // Tambahkan 50 poin untuk setiap rintangan yang berhasil dilewati
+  updateSaldo(50); // Panggil fungsi untuk menambahkan skor ke saldo
+}
+      });
+
+     // Cek jika burung (kubus) menyentuh tanah atau terbang terlalu tinggi
+if (birdY + birdSize > canvas.height || birdY < 0) {
+  isGameOver = true;
+  updateSaldo(score); // Perbarui saldo dengan skor saat ini
+  alert("Game Over! Skor Anda: " + score);
+  window.location.href = "main.html"; // Arahkan ke halaman main.html setelah klik OK
+}
+
+      // Gambar skor
+      ctx.fillStyle = "black";
+      ctx.font = "24px Arial";
+      ctx.fillText("Skor: " + score, 10, 30);
+
+      frameCount++;
+      requestAnimationFrame(updateGame);
+    }
+
+    // Kontrol burung (kubus)
+    document.addEventListener("keydown", () => {
+      if (!isGameOver) {
+        velocity = lift;
+      }
+    });
+
+    document.addEventListener("touchstart", () => {
+      if (!isGameOver) {
+        velocity = lift;
+      }
+    });
+
+    // Mulai permainan
+    updateGame();
+    
+    
+              // Firebase
+          var firebaseConfig = {
+            apiKey: "AIzaSyC6q-jTNQxXOPCaZczcpgRk4q8ftQ0-n3c",
+            authDomain: "internet-14942.firebaseapp.com",
+            projectId: "internet-14942",
+            storageBucket: "internet-14942.appspot.com",
+            messagingSenderId: "214259914034",
+            appId: "1:214259914034:web:de404cf9ee7b35b41b732b",
+            measurementId: "G-BX35S5MZJY"
+          };
+          firebase.initializeApp(firebaseConfig);
+
+          var db = firebase.firestore();
+
+          // Fungsi untuk memperbarui saldo
+          function updateSaldo(tambahSaldo) {
+            firebase.auth().onAuthStateChanged(function(user) {
+              if (user) {
+                var userId = user.uid;
+                var saldoRef = db.collection("users").doc(userId);
+
+                // Ambil saldo saat ini dan tambahkan
+                saldoRef.get().then(function(doc) {
+                  if (doc.exists) {
+                    var saldoSekarang = doc.data().saldo;
+                    saldoRef.update({
+                      saldo: firebase.firestore.FieldValue.increment(tambahSaldo)
+                    }).then(function() {
+                      console.log("Saldo berhasil diperbarui!");
+                    }).catch(function(error) {
+                      console.error("Kesalahan saat memperbarui saldo: ", error);
+                    });
+                  }
+                });
+              }
+            });
+          }
+
+
+          window.onload = function() {
+            var gridId = 'game3'; // Ubah ini sesuai halaman (game1, game2, atau game3)
+
+            // Set ulang waktu saat halaman grid dibuka
+            var newEndTime = new Date().getTime() + 180 * 1000; // Set durasi countdown baru (misalnya 30 detik)
+            localStorage.setItem(gridId + 'EndTime', newEndTime);
+            localStorage.setItem(gridId + 'Expired', 'false'); // Set expired kembali ke false
+
+            // Mulai countdown lagi
+            initializeCountdown(gridId, newEndTime);
+          }
+  </script>
+</body>
+</html>
+
+
